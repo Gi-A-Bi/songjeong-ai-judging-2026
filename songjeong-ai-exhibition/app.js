@@ -95,7 +95,7 @@ function renderList() {
 function card(room, e) {
   const work = e.work, image = work.pages.find(p => p.image);
   const thumb = el('span', {className:'thumb'});
-  if (image) thumb.append(el('img', {src:image.image, alt:'', loading:'lazy'})); else { thumb.textContent = room.icon; thumb.setAttribute('aria-hidden', 'true'); }
+  if (image || work.thumb) thumb.append(el('img', {src:work.thumb || image.image, alt:'', loading:'lazy'})); else { thumb.textContent = room.icon; thumb.setAttribute('aria-hidden', 'true'); }
   const note = work.note || (work.pages.length > 1 ? work.pages.length + '쪽' : '');
   const b = button('', () => { listDialog.close(); Game.goToExhibit(e, true); }, {className:'card'});
   b.append(thumb, el('span', {className:'card-body'}, el('span', {className:'card-title'}, work.title), note ? el('span', {className:'card-note'}, note) : ''));
