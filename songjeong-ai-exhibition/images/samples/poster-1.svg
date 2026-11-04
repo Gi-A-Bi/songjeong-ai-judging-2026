@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 850" width="600" height="850" font-family="system-ui, sans-serif">
+<rect width="600" height="850" fill="#ffe9c9"/>
+
+<rect x="40" y="40" width="520" height="770" rx="24" fill="none" stroke="#d97b2b" stroke-width="10"/>
+<circle cx="300" cy="330" r="150" fill="#d97b2b" opacity=".25"/>
+<text x="300" y="350" text-anchor="middle" font-size="120">💡</text>
+<text x="300" y="560" text-anchor="middle" font-size="54" font-weight="700" fill="#d97b2b">생각은 내가 먼저</text>
+<text x="300" y="630" text-anchor="middle" font-size="28" fill="#444">AI에 묻기 전, 나의 생각부터 적어 봐요</text>
+<text x="300" y="770" text-anchor="middle" font-size="24" fill="#777">예시 포스터 이미지</text>
+</svg>
