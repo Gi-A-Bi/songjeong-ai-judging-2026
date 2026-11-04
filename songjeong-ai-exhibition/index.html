@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>송정 AI 작품마을</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f9f5;color:#18332b;font:16px system-ui,sans-serif}main{max-width:960px;margin:auto;padding:24px}h1{margin:.3em 0}.tag{color:#237258;font-weight:700}button{font:inherit;cursor:pointer;border:1px solid #aac7b8;background:white;color:#18332b;border-radius:12px;padding:10px 14px}button:focus-visible{outline:3px solid #145ac2;outline-offset:2px}nav,.controls,.cards{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.map{position:relative;aspect-ratio:2/1;background:linear-gradient(#ddf3d8 53%,#f6e7c6 53%,#f6e7c6 75%,#ddf3d8 75%);border:2px solid #a4c7a0;border-radius:20px;overflow:hidden}.door{position:absolute;top:12%;transform:translateX(-50%);width:27%;padding:10px 3px;border:0;border-top:7px solid #3d866d;background:#fff8e8;font-weight:700}.avatar{position:absolute;transform:translate(-50%,-50%);font-size:clamp(22px,5vw,42px);pointer-events:none}.cards button{flex:1 1 160px;text-align:left}.thumb{display:block;font-size:2rem;margin-bottom:8px}dialog{width:min(90vw,720px);border:0;border-radius:18px;padding:24px;color:inherit}dialog::backdrop{background:#152923bb}dialog img{display:block;max-width:100%;max-height:60vh;margin:auto}#content{white-space:pre-wrap;line-height:1.65}.controls button{min-width:44px}[hidden]{display:none!important}
+</style>
+<main><span class="tag">서울송정초등학교 · 2026 AI 페스티벌</span><h1>송정 AI 작품마을</h1><p>방향키나 화면 버튼으로 걸어가거나, 전시관을 바로 선택해요.</p>
+<nav aria-label="전시관 바로가기" id="nav"></nav>
+<section id="plaza"><div class="map" id="map" aria-label="중앙 광장"><span id="avatar" class="avatar" aria-hidden="true">🤖</span></div>
+<div class="controls" aria-label="이동 버튼"><button data-move="ArrowLeft" aria-label="왼쪽">←</button><button data-move="ArrowUp" aria-label="위">↑</button><button data-move="ArrowDown" aria-label="아래">↓</button><button data-move="ArrowRight" aria-label="오른쪽">→</button></div></section>
+<section id="gallery" hidden><h2 id="room" tabindex="-1"></h2><div class="cards" id="cards"></div></section>
+<p>시안 · 화면에 보이는 작품은 감상 기능을 확인하기 위한 예시입니다.</p></main>
+<dialog id="viewer" aria-labelledby="title"><form method="dialog"><button>닫기</button></form><h2 id="title"></h2><div id="content"></div><p id="page" aria-live="polite"></p><div class="controls"><button id="prevPage">이전 쪽</button><button id="nextPage">다음 쪽</button><button id="nextWork">다음 작품</button></div></dialog>
+<script src="works.js"></script><script src="app.js"></script></html>
