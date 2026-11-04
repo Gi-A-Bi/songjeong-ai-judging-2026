@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="referrer" content="no-referrer">
 <title>송정 AI 작품마을</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2/dist/galmuri.css">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,7 +14,7 @@
 <header class="top">
   <div class="brand">
     <span class="tag">서울송정초등학교 · 2026 AI 페스티벌</span>
-    <h1>송정 AI 작품마을</h1>
+    <h1><span class="logo" aria-hidden="true">🏡</span> 송정 AI 작품마을</h1>
   </div>
   <nav aria-label="전시관 바로가기" id="nav"></nav>
 </header>
@@ -22,9 +24,12 @@
     <canvas id="world" tabindex="0" aria-label="송정 AI 작품마을 지도. 방향키로 걷고, 작품 앞에서 스페이스를 누르면 크게 봅니다. 화면을 누르면 그곳으로 걸어갑니다."></canvas>
     <div class="hud hud-top">
       <span class="place" id="place"></span>
+      <div class="hud-right">
+        <canvas id="minimap" width="150" height="100" class="minimap" aria-hidden="true"></canvas>
       <div class="hud-buttons">
         <button id="listOpen" class="hud-btn">📋 작품 목록</button>
         <button id="pickOpen" class="hud-btn" aria-label="캐릭터 바꾸기">🧑‍🎨</button>
+      </div>
       </div>
     </div>
     <div class="hud hud-bottom">
