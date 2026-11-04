@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000" font-family="system-ui, sans-serif">
-<rect width="800" height="1000" fill="#fffdf6"/>
-
-<rect x="40" y="60" width="720" height="860" fill="#fff" stroke="#e5dcc5" stroke-width="3"/>
-<rect x="40" y="60" width="720" height="60" fill="#f2ecd9"/>
-<text x="400" y="100" text-anchor="middle" font-size="26" fill="#6b6250">미래의 도서관 · 학년·반·이름 가림 (예시 2쪽)</text>
-<line x1="60" y1="150" x2="740" y2="150" stroke="#d9d2c0" stroke-width="2"/><line x1="60" y1="220" x2="740" y2="220" stroke="#d9d2c0" stroke-width="2"/><line x1="60" y1="290" x2="740" y2="290" stroke="#d9d2c0" stroke-width="2"/><line x1="60" y1="360" x2="740" y2="360" stroke="#d9d2c0" stroke-width="2"/><line x1="60" y1="430" x2="740" y2="430" stroke="#d9d2c0" stroke-width="2"/><line x1="60" y1="500" x2="740" y2="500" stroke="#d9d2c0" stroke-width="2"/><line x1="60" y1="570" x2="740" y2="570" stroke="#d9d2c0" stroke-width="2"/><line x1="60" y1="640" x2="740" y2="640" stroke="#d9d2c0" stroke-width="2"/><line x1="60" y1="710" x2="740" y2="710" stroke="#d9d2c0" stroke-width="2"/><line x1="60" y1="780" x2="740" y2="780" stroke="#d9d2c0" stroke-width="2"/><line x1="60" y1="850" x2="740" y2="850" stroke="#d9d2c0" stroke-width="2"/><text x="70" y="140" font-size="30" fill="#333">로봇은 책을 찾아 주었고, 나는</text><text x="70" y="210" font-size="30" fill="#333">친구와 읽고 싶은 책을 골랐다.</text><text x="70" y="280" font-size="30" fill="#333">우리는 창가에 앉아 함께 책을 읽었다.</text><text x="70" y="350" font-size="30" fill="#333"></text><text x="70" y="420" font-size="30" fill="#333">도서관을 나올 때 로봇이 손을</text><text x="70" y="490" font-size="30" fill="#333">흔들어 주었다. 다음에 또 오고 싶다.</text>
-<text x="400" y="960" text-anchor="middle" font-size="22" fill="#999">- 2 -</text>
-</svg>
