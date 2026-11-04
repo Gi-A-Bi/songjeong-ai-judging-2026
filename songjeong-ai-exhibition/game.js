@@ -31,9 +31,10 @@ const Game = (() => {
 
   function thumb(work) {
     const page = work.pages.find(p => p.image);
-    if (!page) return null;
-    if (!images.has(page.image)) { const img = new Image(); img.src = page.image; images.set(page.image, img); }
-    const img = images.get(page.image);
+    const src = work.thumb || (page && page.image);
+    if (!src) return null;
+    if (!images.has(src)) { const img = new Image(); img.src = src; images.set(src, img); }
+    const img = images.get(src);
     return img.complete && img.naturalWidth ? img : null;
   }
 
