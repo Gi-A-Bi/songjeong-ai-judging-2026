@@ -9,15 +9,45 @@ const Game = (() => {
   let keys = new Set(), heldDir = null, path = [], pending = null, fade = 0, fadeDir = 0, fadeMid = null, lastTime = 0, running = false;
   let nearExhibit = null, onNear = () => {}, onEnter = () => {}, onInteract = () => {}, avatarKind = 'robot', bubbleTimer = 0;
   const DIRS = {up:[0, -1], down:[0, 1], left:[-1, 0], right:[1, 0]};
+  const FONT = '"Galmuri11 Bold", "Galmuri11", "Galmuri9", "DungGeunMo", "Noto Sans KR", system-ui, sans-serif';
+  const mini = document.getElementById('minimap');
+  const mctx = mini ? mini.getContext('2d') : null;
+  let clock = 0;
 
   function parseTile(key) { const m = key.match(/^([a-zA-Z0-9]+)(.*)$/); return tile(m[1], m[2] || undefined); }
 
   function buildLayer(m) {
     const [c, g] = offscreen(m.w * TILE, m.h * TILE);
+    const at = (x, y) => (x < 0 || y < 0 || x >= m.w || y >= m.h) ? '' : m.ground[y * m.w + x];
+    const kind = k => k.replace(/[#\d].*$/, '').replace(/\d$/, '');
     for (let y = 0; y < m.h; y++) for (let x = 0; x < m.w; x++) g.drawImage(parseTile(m.ground[y * m.w + x]), x * TILE, y * TILE);
+    // 길·광장·물 가장자리와 벽 아래 그림자
+    for (let y = 0; y < m.h; y++) for (let x = 0; x < m.w; x++) {
+      const k = kind(at(x, y)), px = x * TILE, py = y * TILE;
+      if (k === 'path' || k === 'plaza') {
+        g.fillStyle = 'rgba(90,70,30,.22)';
+        if (kind(at(x, y - 1)).startsWith('grass')) g.fillRect(px, py, TILE, 2);
+        if (kind(at(x, y + 1)).startsWith('grass')) g.fillRect(px, py + TILE - 2, TILE, 2);
+        if (kind(at(x - 1, y)).startsWith('grass')) g.fillRect(px, py, 2, TILE);
+        if (kind(at(x + 1, y)).startsWith('grass')) g.fillRect(px + TILE - 2, py, 2, TILE);
+      }
+      if (k === 'water') {
+        g.fillStyle = '#c9b27e';
+        if (!kind(at(x, y - 1)).startsWith('water')) g.fillRect(px, py, TILE, 3);
+        if (!kind(at(x, y + 1)).startsWith('water')) g.fillRect(px, py + TILE - 3, TILE, 3);
+        if (!kind(at(x - 1, y)).startsWith('water')) g.fillRect(px, py, 3, TILE);
+        if (!kind(at(x + 1, y)).startsWith('water')) g.fillRect(px + TILE - 3, py, 3, TILE);
+      }
+      if ((k === 'wall' || k === 'wallTop') && !['wall', 'wallTop', ''].includes(kind(at(x, y + 1)))) {
+        const grad = g.createLinearGradient(0, py + TILE, 0, py + TILE + 10); grad.addColorStop(0, 'rgba(0,0,0,.28)'); grad.addColorStop(1, 'rgba(0,0,0,0)');
+        g.fillStyle = grad; g.fillRect(px, py + TILE, TILE, 10);
+      }
+    }
     for (const e of m.exhibits) PROPS.frame(g, e.x * TILE + 2, e.y * TILE - 14, e.w * TILE - 4, TILE + 10, e.color);
-    [...m.props].sort((a, b) => a.y - b.y).forEach(p => {
+    [...m.props].sort((a, b) => (a.sortY ?? a.y) - (b.sortY ?? b.y)).forEach(p => {
       if (p.type === 'placard') PROPS.placard(g, p.x + p.offX, p.y + p.offY, p.w, p.h);
+      else if (p.type === 'building') PROPS.building(g, p.x, p.y, p.w, p.h, p.color, p.wall);
+      else if (p.n !== undefined) PROPS[p.type](g, p.x, p.y, p.n);
       else PROPS[p.type](g, p.x, p.y, p.color);
     });
     return c;
@@ -167,14 +197,15 @@ const Game = (() => {
 
   function drawEntity(ent) {
     const s = sprite(ent.kind, ent.dir, ent.frame);
-    const x = Math.round(ent.px + 4 - camera.x), y = Math.round(ent.py - 6 - camera.y);
+    const idle = ent.moving ? 0 : (Math.floor(clock * 2 + (ent.x + ent.y)) % 2);
+    const x = Math.round(ent.px + 4 - camera.x), y = Math.round(ent.py - 6 - camera.y) + idle;
     ctx.fillStyle = 'rgba(0,0,0,.22)'; ctx.beginPath(); ctx.ellipse(x + 12, y + 31, 10, 4, 0, 0, Math.PI * 2); ctx.fill();
     ctx.drawImage(s, x, y);
   }
   function roundRect(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
   function bubble(text, wx, wy) {
     ctx.save(); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.font = '600 13px system-ui, sans-serif';
+    ctx.font = '13px ' + FONT;
     const tw = ctx.measureText(text).width + 16, sx = (wx - camera.x) * scale, sy = (wy - camera.y) * scale;
     const bx = Math.max(4, Math.min(viewW - tw - 4, sx - tw / 2)), by = sy - 34;
     ctx.fillStyle = '#fff'; ctx.strokeStyle = '#18332b'; ctx.lineWidth = 1.5;
@@ -184,7 +215,7 @@ const Game = (() => {
     ctx.restore();
   }
   function labelStyle(kind) {
-    return {building:{font:'800 15px', fill:'#fff', bg:null, stroke:'#18332b'}, small:{font:'600 11px', fill:'#fff', stroke:'rgba(0,0,0,.6)'}, sign:{font:'800 11px', fill:'#6b4e12'}, zone:{font:'800 12px', fill:'#18332b'}, title:{font:'600 11px', fill:'#fff', stroke:'rgba(0,0,0,.65)'}}[kind];
+    return {building:{font:'16px', fill:'#fff', bg:null, stroke:'#18332b'}, small:{font:'12px', fill:'#fff', stroke:'rgba(0,0,0,.6)'}, sign:{font:'12px', fill:'#6b4e12'}, zone:{font:'13px', fill:'#18332b'}, title:{font:'12px', fill:'#fff', stroke:'rgba(0,0,0,.7)'}}[kind];
   }
   function drawLabels(which) {
     ctx.save(); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -193,7 +224,7 @@ const Game = (() => {
       if ((l.kind === 'title') !== (which === 'title')) continue;
       if (l.x < vx0 || l.x > vx1 || l.y < vy0 || l.y > vy1) continue;
       const st = labelStyle(l.kind), sx = (l.x - camera.x) * scale, sy = (l.y - camera.y) * scale;
-      ctx.font = st.font + ' system-ui, sans-serif';
+      ctx.font = st.font + ' ' + FONT;
       if (l.kind === 'building') { const tw = ctx.measureText(l.text).width + 18; ctx.fillStyle = l.color; roundRect(sx - tw / 2, sy - 12, tw, 24, 12); ctx.fill(); }
       if (st.stroke) { ctx.lineWidth = 3; ctx.strokeStyle = st.stroke; ctx.strokeText(l.text, sx, sy); }
       ctx.fillStyle = l.kind === 'zone' ? l.color : st.fill;
@@ -208,10 +239,51 @@ const Game = (() => {
       const img = thumb(e.work);
       ctx.save(); ctx.imageSmoothingEnabled = true;
       if (img) { const r = Math.min(w / img.naturalWidth, h / img.naturalHeight), dw = img.naturalWidth * r, dh = img.naturalHeight * r; ctx.fillStyle = '#f6f6f3'; ctx.fillRect(x, y, w, h); ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh); }
-      else { ctx.fillStyle = '#fff8e8'; ctx.fillRect(x, y, w, h); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.font = '700 11px system-ui, sans-serif'; ctx.fillStyle = e.color; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; const sx = (x + w / 2) * scale, sy = (y + h / 2) * scale; const t = e.work.title; ctx.fillText(t.length > 7 ? t.slice(0, 7) + '…' : t, sx, sy); }
+      else { ctx.fillStyle = '#fff8e8'; ctx.fillRect(x, y, w, h); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.font = '12px ' + FONT; ctx.fillStyle = e.color; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; const sx = (x + w / 2) * scale, sy = (y + h / 2) * scale; const t = e.work.title; ctx.fillText(t.length > 7 ? t.slice(0, 7) + '…' : t, sx, sy); }
       ctx.restore();
       if (e === nearExhibit) { ctx.strokeStyle = '#ffe36b'; ctx.lineWidth = 3; ctx.strokeRect(x - 5, y - 5, w + 10, h + 10); }
     }
+  }
+
+  function drawEffects() {
+    const t = clock, vx0 = Math.floor(camera.x / TILE), vy0 = Math.floor(camera.y / TILE), vx1 = Math.ceil((camera.x + viewW / scale) / TILE), vy1 = Math.ceil((camera.y + viewH / scale) / TILE);
+    for (let y = Math.max(0, vy0); y <= Math.min(map.h - 1, vy1); y++) for (let x = Math.max(0, vx0); x <= Math.min(map.w - 1, vx1); x++) {
+      const k = map.ground[y * map.w + x];
+      if (k.startsWith('water')) {
+        const ph = (t * 1.5 + x * .7 + y * 1.3) % 3;
+        ctx.fillStyle = 'rgba(255,255,255,' + (ph < 1 ? .55 : ph < 2 ? .25 : 0) + ')';
+        ctx.fillRect(x * TILE + 6 + ((x * 5 + y * 3) % 14) - camera.x, y * TILE + 10 + ((x * 3 + y * 7) % 12) - camera.y, 6, 2);
+      }
+    }
+    if (map.id === 'village') {                                   // 분수 물방울
+      const fx = 22 * TILE, fy = 21 * TILE + 8;
+      for (let i = 0; i < 6; i++) { const a = (t * 2 + i) % 1, dx = Math.cos(i * 1.05) * 14 * a, dy = -18 * Math.sin(a * Math.PI) + a * 10; ctx.fillStyle = 'rgba(220,245,255,' + (1 - a) + ')'; ctx.fillRect(fx + dx - camera.x, fy + dy - camera.y, 2, 2); }
+    }
+    for (const e of map.exhibits) {                               // 액자 스포트라이트
+      const x = (e.x + 1) * TILE - camera.x, y = e.y * TILE - 8 - camera.y;
+      if (x < -80 || x > viewW / scale + 80 || y < -60 || y > viewH / scale + 60) continue;
+      const grad = ctx.createRadialGradient(x, y, 4, x, y, 52); grad.addColorStop(0, 'rgba(255,240,180,.28)'); grad.addColorStop(1, 'rgba(255,240,180,0)');
+      ctx.fillStyle = grad; ctx.fillRect(x - 52, y - 30, 104, 90);
+    }
+  }
+  function drawVignette() {
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const grad = ctx.createRadialGradient(viewW / 2, viewH / 2, Math.min(viewW, viewH) * .45, viewW / 2, viewH / 2, Math.max(viewW, viewH) * .75);
+    grad.addColorStop(0, 'rgba(0,0,0,0)'); grad.addColorStop(1, 'rgba(10,30,20,.35)');
+    ctx.fillStyle = grad; ctx.fillRect(0, 0, viewW, viewH);
+  }
+  function drawMinimap() {
+    if (!mctx) return;
+    const mw = mini.width, mh = mini.height, s = Math.min(mw / (map.w * TILE), mh / (map.h * TILE));
+    const ox = (mw - map.w * TILE * s) / 2, oy = (mh - map.h * TILE * s) / 2;
+    mctx.imageSmoothingEnabled = true;
+    mctx.fillStyle = '#10211b'; mctx.fillRect(0, 0, mw, mh);
+    mctx.drawImage(layer, ox, oy, map.w * TILE * s, map.h * TILE * s);
+    mctx.strokeStyle = 'rgba(255,255,255,.7)'; mctx.lineWidth = 1;
+    mctx.strokeRect(ox + camera.x * s, oy + camera.y * s, viewW / scale * s, viewH / scale * s);
+    for (const n of npcs) { mctx.fillStyle = '#fff'; mctx.fillRect(ox + (n.px + 12) * s - 1.5, oy + (n.py + 16) * s - 1.5, 3, 3); }
+    mctx.fillStyle = '#ffe36b'; mctx.beginPath(); mctx.arc(ox + (player.px + 16) * s, oy + (player.py + 16) * s, 3, 0, Math.PI * 2); mctx.fill();
+    mctx.strokeStyle = '#18332b'; mctx.stroke();
   }
 
   function render() {
@@ -219,19 +291,22 @@ const Game = (() => {
     ctx.imageSmoothingEnabled = false;
     ctx.fillStyle = '#1f3d2e'; ctx.fillRect(0, 0, viewW / scale, viewH / scale);
     ctx.drawImage(layer, -camera.x, -camera.y);
+    drawEffects();
     drawExhibits();
     drawLabels('title');
     [...npcs, player].sort((a, b) => a.py - b.py).forEach(drawEntity);
     if (path.length) { const last = path.length ? pathEnd() : null; if (last) { ctx.strokeStyle = 'rgba(255,255,255,.8)'; ctx.lineWidth = 2; ctx.strokeRect(last.x * TILE + 4 - camera.x, last.y * TILE + 4 - camera.y, TILE - 8, TILE - 8); } }
     drawLabels('other');
     for (const n of npcs) if (n.say) bubble(n.say, n.px + TILE / 2, n.py - 8);
+    drawVignette();
+    drawMinimap();
     if (fade > 0) { ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.fillStyle = 'rgba(16,30,25,' + fade + ')'; ctx.fillRect(0, 0, viewW, viewH); }
   }
   function pathEnd() { let x = player.tx, y = player.ty; for (const d of path) { x += DIRS[d][0]; y += DIRS[d][1]; } return {x, y}; }
 
   function loop(t) {
     if (!running) return;
-    const dt = Math.min(.05, (t - lastTime) / 1000 || 0); lastTime = t;
+    const dt = Math.min(.05, (t - lastTime) / 1000 || 0); lastTime = t; clock += dt;
     update(dt); render();
     requestAnimationFrame(loop);
   }
