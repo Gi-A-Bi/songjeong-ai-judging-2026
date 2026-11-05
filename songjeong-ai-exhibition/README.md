@@ -12,14 +12,13 @@
 - 목록: "작품 목록" 버튼으로 구역별 목록과 제목 찾기를 열고, 작품을 고르면 그 앞으로 순간이동합니다. 주소의 #character, #poster, #writing으로 전시관을 바로 열 수 있습니다.
 - 마을 주민: 광장과 전시관의 NPC에게 다가가거나 누르면 안내 말풍선이 뜹니다. 실제 다른 관람객과의 접속(멀티플레이)은 서버가 필요해 포함하지 않았습니다.
 
-## 그림 모드 (생성 이미지 비교)
+## 그림
 
-HUD의 🎨 버튼으로 두 가지 그림을 번갈아 볼 수 있습니다. 선택은 기기에 저장되고, 주소에 `?art=gen` 또는 `?art=drawn`을 붙여 강제할 수도 있습니다.
+마을 배경, 소품, 전시관 바닥·벽·액자, 캐릭터 5종의 걷기 시트는 GPT로 생성한 이미지(images/art/)를 씁니다. 프롬프트와 생성 기록은 IMAGE_PROMPTS.md에 있습니다. 이미지를 못 불러오면 sprites.js·maps.js의 코드로 그린 타일이 대신 나옵니다.
 
-- 기본 그림: 코드로 그린 타일·건물·소품(sprites.js, maps.js).
-- 생성 그림: GPT로 만든 이미지(images/art/). 마을 전체 배경 한 장(village.webp)과 걷는 영역 정의(maps.js의 buildVillageArt), 소품 시트에서 잘라낸 전시관 소품(화분·벤치·안내 데스크), 캐릭터관 카펫. 프롬프트는 IMAGE_PROMPTS.md에 있습니다.
-- 2차 반영: 포스터관 타일 바닥, 글짓기관 나무 바닥, 전시관 벽 띠(주황 원본에서 보라·갈색은 색 변환), 액자 3종(조명 포함), 캐릭터 5종 4방향 걷기 시트(char-<이름>.png, 3열×4행, 칸 높이 38). 새 캐릭터는 같은 규격으로 images/art/char-<이름>.png에 넣고 art.js의 FILES와 sprites.js의 AVATARS에 추가하면 됩니다.
-- 아직 안 쓰는 생성 이미지: building-orange.png(건물 단독), robot.png(로봇 정면).
+- 마을: village.webp 한 장 위에 걷는 영역·문·간판 라벨·NPC를 배치(maps.js의 buildVillageArt).
+- 전시관: 바닥 패턴(carpet-character, floor-poster, floor-writing), 벽 띠(wall-*; 보라·갈색은 주황 원본에서 색 변환), 액자(frame-*; 조명 포함), 소품(prop-*).
+- 캐릭터: char-<이름>.png, 3열(서기·걷기 2장) × 4행(아래·위·왼쪽·오른쪽), 칸 높이 38. 새 캐릭터는 같은 규격으로 파일을 넣고 art.js의 FILES와 sprites.js의 AVATARS에 추가합니다.
 
 ## 글꼴
 
@@ -29,7 +28,7 @@ HUD의 🎨 버튼으로 두 가지 그림을 번갈아 볼 수 있습니다. �
 
 - index.html — 화면 구조(월드 캔버스, HUD, 캐릭터 선택, 목록, 뷰어)
 - style.css — 디자인
-- sprites.js — 픽셀 캐릭터 스프라이트, 타일 텍스처, 소품 그리기
+- sprites.js — 예비용 픽셀 캐릭터·타일·소품 그리기(이미지를 못 불러올 때)
 - maps.js — 마을 지도와 전시관 생성(works.js의 구역·작품 수에 따라 자동 배치)
 - game.js — 이동, 길찾기, 카메라, 그리기, NPC, 포털
 - app.js — HUD, 캐릭터 선택, 작품 목록, 작품 뷰어

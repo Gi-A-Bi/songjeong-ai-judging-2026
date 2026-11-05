@@ -43,9 +43,6 @@ byId('pickGo').addEventListener('click', () => {
   pick.close();
   artReady.then(() => { Game.start(chosen); byId('world').focus({preventScroll:true}); });
 });
-byId('artToggle').addEventListener('click', () => ART.toggle());
-byId('artToggle').innerHTML = '🎨<span class="hud-label"> ' + (ART.on ? '생성 그림' : '기본 그림') + '</span>';
-byId('artToggle').title = ART.on ? 'GPT 생성 이미지 사용 중. 누르면 코드로 그린 기본 그림으로 바꿉니다.' : '코드로 그린 기본 그림 사용 중. 누르면 GPT 생성 이미지로 바꿉니다.';
 byId('pickOpen').addEventListener('click', () => { Game.clearKeys(); pick.showModal(); });
 pick.addEventListener('cancel', ev => { if (!Game.map) ev.preventDefault(); });
 
