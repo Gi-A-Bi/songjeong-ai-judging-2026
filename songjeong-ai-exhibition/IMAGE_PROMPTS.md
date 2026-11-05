@@ -129,3 +129,8 @@ green and yellow with a dark outline and a small house icon on the left. Only th
 
 - 받은 것: 고니·고양이·거북이·다람쥐 걷기 시트 4장. 모두 격자와 방향이 정확해 그대로 연결했다.
 - 캐릭터 선택을 로봇·다람쥐·거북이·고니·고양이 5종으로 줄였다. 마을·전시관 NPC도 이 5종을 쓴다.
+
+## 결정 (2026-11-05)
+
+- 생성 그림으로 확정. 전환 버튼과 모드 설정을 제거하고 생성 이미지만 사용한다. 코드로 그린 타일은 이미지 로딩 실패 시 예비용으로만 남겼다.
+- 미사용 파일 삭제: building-orange.png, robot.png.

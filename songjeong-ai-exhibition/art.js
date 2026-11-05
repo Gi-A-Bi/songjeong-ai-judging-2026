@@ -1,11 +1,6 @@
-// 그림 모드: GPT로 생성한 이미지(마을 배경·소품·카펫)를 사용. 코드로 그린 기본 모드와 비교용.
+// 생성 이미지(마을 배경·소품·바닥·벽·액자·캐릭터)를 불러와 그리는 모듈
 const ART = (() => {
-  let on = false;
-  try {
-    const q = new URLSearchParams(location.search).get('art');
-    if (q) localStorage.setItem('sj-art', q === 'gen' || q === '1' ? 'gen' : 'drawn');
-    on = localStorage.getItem('sj-art') === 'gen';
-  } catch (e) {}
+  const on = true;   // 생성 이미지를 기본으로 사용. 이미지를 못 불러오면 코드로 그린 타일이 대신 나온다.
   const images = {};
   const FILES = {village:'images/art/village.webp', carpet:'images/art/carpet-character.webp',
     'floor-poster':'images/art/floor-poster.webp', 'floor-writing':'images/art/floor-writing.webp',
@@ -45,6 +40,5 @@ const ART = (() => {
     g.drawImage(im, Math.round(x + (cells * TILE - im.width) / 2), Math.round(y + TILE - im.height + (type === 'fountain' ? 24 : 2)));
     return true;
   }
-  return {get on() { return on; }, images, load, drawProp, charSprite, FRAME_OPEN,
-    toggle() { try { localStorage.setItem('sj-art', on ? 'drawn' : 'gen'); } catch (e) {} location.reload(); }};
+  return {get on() { return on; }, images, load, drawProp, charSprite, FRAME_OPEN};
 })();
