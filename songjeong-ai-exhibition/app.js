@@ -37,7 +37,9 @@ setInterval(() => {                       // 선택 화면에서 캐릭터가 �
   const f = [0, 1, 0, 2][avatarFrame];
   for (const a of avatarCanvases) drawAvatar(a.g, a.kind, a.kind === chosen ? f : 0);
 }, 220);
-const artReady = ART.load();
+// 생성 이미지와 픽셀 글꼴을 먼저 불러온 뒤 시작 (글꼴은 2초까지만 기다림)
+const fontReady = document.fonts ? Promise.race([document.fonts.load('28px "Galmuri11 Bold"').catch(() => {}), new Promise(r => setTimeout(r, 2000))]) : Promise.resolve();
+const artReady = Promise.all([ART.load(), fontReady]);
 byId('pickGo').addEventListener('click', () => {
   try { localStorage.setItem('sj-avatar', chosen); } catch (e) {}
   pick.close();

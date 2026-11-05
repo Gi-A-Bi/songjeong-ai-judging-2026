@@ -100,7 +100,6 @@ function buildVillageArt() {
     m.block(dx, 12, 0); m.block(dx + 1, 12, 0);
     m.portals.push({x:dx, y:12, to:room.id}, {x:dx + 1, y:12, to:room.id});
     m.labels.push({x:(x0 + x1 + 1) / 2 * TILE + (i === 0 ? 12 : i === 1 ? 10 : 8), y:7.75 * TILE, text:room.label, kind:'board'});
-    m.labels.push({x:(dx + 1) * TILE, y:13.5 * TILE, text:room.hint, kind:'small'});
   });
   block(3, 10, 3, 12); block(16, 10, 17, 11); block(30, 11, 32, 12); block(44, 10, 45, 12);   // 건물 옆 덤불
   block(2, 19, 11, 27);                       // 연못
