@@ -31,12 +31,15 @@ setInterval(() => {                       // 선택 화면에서 캐릭터가 �
   const f = [0, 1, 0, 2][avatarFrame];
   for (const a of avatarCanvases) { a.g.clearRect(0, 0, 48, 64); a.g.drawImage(sprite(a.kind, a.kind === chosen ? 'down' : 'down', a.kind === chosen ? f : 0), 0, 0, 48, 64); }
 }, 220);
+const artReady = ART.load();
 byId('pickGo').addEventListener('click', () => {
   try { localStorage.setItem('sj-avatar', chosen); } catch (e) {}
   pick.close();
-  Game.start(chosen);
-  byId('world').focus({preventScroll:true});
+  artReady.then(() => { Game.start(chosen); byId('world').focus({preventScroll:true}); });
 });
+byId('artToggle').addEventListener('click', () => ART.toggle());
+byId('artToggle').innerHTML = '🎨<span class="hud-label"> ' + (ART.on ? '생성 그림' : '기본 그림') + '</span>';
+byId('artToggle').title = ART.on ? 'GPT 생성 이미지 사용 중. 누르면 코드로 그린 기본 그림으로 바꿉니다.' : '코드로 그린 기본 그림 사용 중. 누르면 GPT 생성 이미지로 바꿉니다.';
 byId('pickOpen').addEventListener('click', () => { Game.clearKeys(); pick.showModal(); });
 pick.addEventListener('cancel', ev => { if (!Game.map) ev.preventDefault(); });
 
@@ -59,9 +62,11 @@ byId('prompt').addEventListener('click', () => Game.interact());
 byId('nav').append(button('🏡 중앙 광장', () => go('village')));
 for (const room of ROOMS) { const b = button(room.icon + ' ' + room.label, () => go(room.id)); b.dataset.room = room.id; byId('nav').append(b); }
 function go(id) {
-  if (!Game.map) { pick.close(); Game.start(chosen); }
-  if (Game.map.id !== id) Game.enter(id);
-  byId('world').focus({preventScroll:true});
+  artReady.then(() => {
+    if (!Game.map) { pick.close(); Game.start(chosen); }
+    if (Game.map.id !== id) Game.enter(id);
+    byId('world').focus({preventScroll:true});
+  });
 }
 
 document.querySelectorAll('.dpad [data-dir]').forEach(b => {
@@ -111,6 +116,7 @@ function card(room, e) {
   b.setAttribute('aria-label', work.title + ', 작품 앞으로 가서 보기');
   return b;
 }
+byId('listOpen').innerHTML = '📋<span class="hud-label"> 작품 목록</span>';
 byId('listOpen').addEventListener('click', () => {
   if (!Game.map) return;
   Game.clearKeys();
