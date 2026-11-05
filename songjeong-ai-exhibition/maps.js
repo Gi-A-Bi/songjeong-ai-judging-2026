@@ -128,7 +128,7 @@ function buildRoom(room, works) {
   const maxRow = Math.max(...rows.map(r => r.works.length));
   const W = Math.max(18, maxRow * 3 + 8), H = rows.length * 5 + 2;
   const m = makeGrid(room.id, room.label, W, H, room.floor + room.floorColor);
-  if (typeof ART !== 'undefined' && ART.on && room.id === 'character') m.floorImage = 'carpet';
+  if (typeof ART !== 'undefined' && ART.on) { m.floorImage = {character:'carpet', poster:'floor-poster', writing:'floor-writing'}[room.id]; m.wallImage = 'wall-' + room.id; m.frameImage = 'frame-' + room.id; m.capColor = {character:'#c7663a', poster:'#5a48a8', writing:'#7a4f2a'}[room.id]; }
   const wallTop = 'wallTop' + room.wallTop, wall = 'wall' + room.wall;
   // 테두리
   for (let x = 0; x < W; x++) { m.set(x, 0, wallTop, true); m.set(x, H - 1, wallTop, true); }

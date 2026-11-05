@@ -18,7 +18,8 @@ HUD의 🎨 버튼으로 두 가지 그림을 번갈아 볼 수 있습니다. �
 
 - 기본 그림: 코드로 그린 타일·건물·소품(sprites.js, maps.js).
 - 생성 그림: GPT로 만든 이미지(images/art/). 마을 전체 배경 한 장(village.webp)과 걷는 영역 정의(maps.js의 buildVillageArt), 소품 시트에서 잘라낸 전시관 소품(화분·벤치·안내 데스크), 캐릭터관 카펫. 프롬프트는 IMAGE_PROMPTS.md에 있습니다.
-- 아직 안 쓰는 생성 이미지: building-orange.png(건물 단독), robot.png(로봇 정면). 걷기 애니메이션용 4방향 시트가 있어야 캐릭터를 바꿀 수 있습니다.
+- 2차 반영: 포스터관 타일 바닥, 글짓기관 나무 바닥, 전시관 벽 띠(주황 원본에서 보라·갈색은 색 변환), 액자 3종(조명 포함), 로봇 4방향 걷기 시트(char-robot.png, 3열×4행, 칸 30×38). 다른 캐릭터 시트를 같은 규격으로 images/art/char-<이름>.png에 넣고 art.js의 FILES에 추가하면 바로 쓰입니다.
+- 아직 안 쓰는 생성 이미지: building-orange.png(건물 단독), robot.png(로봇 정면).
 
 ## 글꼴
 
