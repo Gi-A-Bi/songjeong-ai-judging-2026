@@ -99,7 +99,7 @@ function buildVillageArt() {
     block(x0, 4, x1, 12);
     m.block(dx, 12, 0); m.block(dx + 1, 12, 0);
     m.portals.push({x:dx, y:12, to:room.id}, {x:dx + 1, y:12, to:room.id});
-    m.labels.push({x:(x0 + x1 + 1) / 2 * TILE + (i === 0 ? 12 : i === 1 ? 10 : 8), y:7.75 * TILE, text:room.icon + ' ' + room.label, kind:'board'});
+    m.labels.push({x:(x0 + x1 + 1) / 2 * TILE + (i === 0 ? 12 : i === 1 ? 10 : 8), y:7.75 * TILE, text:room.label, kind:'board'});
     m.labels.push({x:(dx + 1) * TILE, y:13.5 * TILE, text:room.hint, kind:'small'});
   });
   block(3, 10, 3, 12); block(16, 10, 17, 11); block(30, 11, 32, 12); block(44, 10, 45, 12);   // 건물 옆 덤불
@@ -138,7 +138,7 @@ function buildRoom(room, works) {
     if (b > 0) for (let x = 3; x < W - 3; x++) m.set(x, top, wallTop, true);       // 칸막이 (양 끝 통로 남김)
     for (let x = b > 0 ? 3 : 1; x < (b > 0 ? W - 3 : W - 1); x++) m.set(x, face, wall, true);
     // 구역 표지판
-    m.prop('placard', 3, face, {w:TILE * 3 - 4, h:TILE - 6, offX:2, offY:4});
+    m.prop('placard', 3, face, {w:TILE * 3 - 4, h:TILE - 4, offX:2, offY:3});
     const zoneName = row.zone + (row.first ? '' : ' (계속)');
     m.labels.push({x:4.5 * TILE, y:(face + .45) * TILE, text:zoneName.length > 10 ? zoneName.slice(0, 10) + '…' : zoneName, kind:'zone', color:room.color});
     // 작품 액자
