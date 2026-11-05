@@ -252,12 +252,18 @@ const Game = (() => {
         ctx.fillStyle = 'rgba(24,51,43,.78)'; roundRect(sx - tw / 2, sy - th / 2, tw, th, th / 2); ctx.fill();
         ctx.fillStyle = '#fff'; ctx.fillText(l.text, sx, sy + 1); continue;
       }
-      if (l.kind === 'board') {                                  // 간판: 새긴 듯한 큰 글자
+      if (l.kind === 'board') {                                  // 간판: 바탕 영역 안에 잉크 기준으로 정확히 가운데
+        const bw = l.w * scale, bh = l.h * scale;
+        let size = Math.min(28, Math.floor(bw / (l.text.length + 0.6)), Math.floor(bh * 0.72));
+        ctx.font = size + 'px ' + FONT; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+        const mt = ctx.measureText(l.text);
+        const tx = sx - (mt.actualBoundingBoxRight - mt.actualBoundingBoxLeft) / 2, ty = sy + (mt.actualBoundingBoxAscent - mt.actualBoundingBoxDescent) / 2;
         ctx.lineJoin = 'round';
-        ctx.lineWidth = 6; ctx.strokeStyle = '#fff8e8'; ctx.strokeText(l.text, sx, sy);       // 밝은 테두리
-        ctx.fillStyle = 'rgba(80,45,10,.35)'; ctx.fillText(l.text, sx + 2, sy + 3);          // 그림자
-        ctx.lineWidth = 2; ctx.strokeStyle = '#3a2208'; ctx.strokeText(l.text, sx, sy);       // 진한 외곽선
-        ctx.fillStyle = st.fill; ctx.fillText(l.text, sx, sy); continue;
+        ctx.lineWidth = 5; ctx.strokeStyle = '#fff8e8'; ctx.strokeText(l.text, tx, ty);       // 밝은 테두리
+        ctx.fillStyle = 'rgba(80,45,10,.35)'; ctx.fillText(l.text, tx + 2, ty + 2);          // 그림자
+        ctx.lineWidth = 2; ctx.strokeStyle = '#3a2208'; ctx.strokeText(l.text, tx, ty);       // 진한 외곽선
+        ctx.fillStyle = st.fill; ctx.fillText(l.text, tx, ty);
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; continue;
       }
       if (st.stroke) { ctx.lineWidth = 3; ctx.strokeStyle = st.stroke; ctx.strokeText(l.text, sx, sy); }
       ctx.fillStyle = l.kind === 'zone' ? l.color : st.fill;
