@@ -99,7 +99,8 @@ function buildVillageArt() {
     block(x0, 4, x1, 12);
     m.block(dx, 12, 0); m.block(dx + 1, 12, 0);
     m.portals.push({x:dx, y:12, to:room.id}, {x:dx + 1, y:12, to:room.id});
-    m.labels.push({x:(x0 + x1 + 1) / 2 * TILE + (i === 0 ? 12 : i === 1 ? 10 : 8), y:7.75 * TILE, text:room.label, kind:'board'});
+    const board = [[252, 239, 384, 282], [709, 240, 844, 282], [1176, 239, 1310, 282]][i];   // 배경 이미지에서 측정한 간판 바탕 영역(px)
+    m.labels.push({x:(board[0] + board[2]) / 2, y:(board[1] + board[3]) / 2, w:board[2] - board[0], h:board[3] - board[1], text:room.label, kind:'board'});
   });
   block(3, 10, 3, 12); block(16, 10, 17, 11); block(30, 11, 32, 12); block(44, 10, 45, 12);   // 건물 옆 덤불
   block(2, 19, 11, 27);                       // 연못
