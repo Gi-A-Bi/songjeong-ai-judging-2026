@@ -11,10 +11,10 @@ const ART = (() => {
     'floor-poster':'images/art/floor-poster.webp', 'floor-writing':'images/art/floor-writing.webp',
     'wall-character':'images/art/wall-character.webp', 'wall-poster':'images/art/wall-poster.webp', 'wall-writing':'images/art/wall-writing.webp',
     'frame-character':'images/art/frame-character.png', 'frame-poster':'images/art/frame-poster.png', 'frame-writing':'images/art/frame-writing.png',
-    'char-robot':'images/art/char-robot.png'};
+    'char-robot':'images/art/char-robot.png', 'char-squirrel':'images/art/char-squirrel.png', 'char-turtle':'images/art/char-turtle.png', 'char-swan':'images/art/char-swan.png', 'char-cat':'images/art/char-cat.png'};
   // 액자 이미지 안의 열린 부분(작품이 들어가는 곳)과 캐릭터 시트 셀 크기
   const FRAME_OPEN = {x:7, y:17, w:45, h:33};
-  const CHAR_CELL = {w:30, h:38};
+  const CHAR_ROWS = 4, CHAR_COLS = 3;   // 시트는 3열(서기·걷기1·걷기2) × 4행(아래·위·왼쪽·오른쪽), 칸 크기는 시트마다 다름
   const charCache = new Map();
   // 생성 캐릭터 시트에서 한 칸을 캔버스로 (없으면 null)
   function charSprite(kind, dir, frame) {
@@ -22,10 +22,10 @@ const ART = (() => {
     if (!im) return null;
     const key = kind + dir + frame;
     if (charCache.has(key)) return charCache.get(key);
-    const row = {down:0, up:1, left:2, right:3}[dir] || 0;
-    const [c, g] = offscreen(CHAR_CELL.w, CHAR_CELL.h);
+    const row = {down:0, up:1, left:2, right:3}[dir] || 0, cw = im.width / CHAR_COLS, chh = im.height / CHAR_ROWS;
+    const [c, g] = offscreen(cw, chh);
     g.imageSmoothingEnabled = true;
-    g.drawImage(im, frame * CHAR_CELL.w, row * CHAR_CELL.h, CHAR_CELL.w, CHAR_CELL.h, 0, 0, CHAR_CELL.w, CHAR_CELL.h);
+    g.drawImage(im, frame * cw, row * chh, cw, chh, 0, 0, cw, chh);
     charCache.set(key, c);
     return c;
   }

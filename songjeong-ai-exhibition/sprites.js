@@ -15,14 +15,11 @@ function offscreen(w, h) {
 
 /* ── 캐릭터 ─────────────────────────────── */
 const AVATARS = {
-  robot:  {name:'로봇',   head:'#b9cbd8', body:'#4f6d8f', accent:'#e8503f', eye:'#1b2a38', top:['.....AA.....','.....AA.....','......L.....','............']},
-  cat:    {name:'고양이', head:'#f6c35f', body:'#ef8c2a', accent:'#f6c35f', eye:'#2b2b2b', top:['............','.A........A.','.AA......AA.','.AAA....AAA.']},
-  rabbit: {name:'토끼',   head:'#fdfdfd', body:'#7fb8ec', accent:'#f7a8c4', eye:'#2b2b2b', top:['..AA....AA..','..AA....AA..','..AA....AA..','..AA....AA..']},
-  bear:   {name:'곰',     head:'#b07a45', body:'#d9453b', accent:'#b07a45', eye:'#2b2b2b', top:['............','............','.AAA....AAA.','.AAA....AAA.']},
-  alien:  {name:'외계인', head:'#8fe08f', body:'#5050a8', accent:'#8fe08f', eye:'#1b1b3a', top:['..A......A..','...L....L...','....L..L....','............']},
-  dino:   {name:'공룡',   head:'#5fb879', body:'#2f7d53', accent:'#f2d35b', eye:'#1b2b1b', top:['............','............','..A...A..A..','..AA.AAA.AA.']},
-  fox:    {name:'여우',   head:'#f28a3c', body:'#fdf2e4', accent:'#f28a3c', eye:'#2b2b2b', top:['............','.A........A.','.AA......AA.','.AAA....AAA.']},
-  penguin:{name:'펭귄',   head:'#2d3b4f', body:'#2d3b4f', accent:'#f2c14e', eye:'#ffffff', top:['............','............','............','............']}
+  robot:    {name:'로봇',   head:'#b9cbd8', body:'#4f6d8f', accent:'#e8503f', eye:'#1b2a38', top:['.....AA.....','.....AA.....','......L.....','............']},
+  squirrel: {name:'다람쥐', head:'#b07a45', body:'#8a5a2b', accent:'#5fb879', eye:'#2b2b2b', top:['............','.....AAA....','.HH..AA..HH.','.HHH....HHH.']},
+  turtle:   {name:'거북이', head:'#9bcf5f', body:'#4f8a3a', accent:'#5fb879', eye:'#1b2b1b', top:['......A.....','.....AAA....','......A.....','............']},
+  swan:     {name:'고니',   head:'#fdfdfd', body:'#f2f2f2', accent:'#f2a33c', eye:'#2b2b2b', top:['............','......H.....','.....HH.....','............']},
+  cat:      {name:'고양이', head:'#f6c35f', body:'#ef8c2a', accent:'#f6c35f', eye:'#2b2b2b', top:['............','.A........A.','.AA......AA.','.AAA....AAA.']}
 };
 const BODY = {
   down:['.HHHHHHHHHH.','HHHHHHHHHHHH','HHHEEHHHHEEH','HHHEEHHHHEEH','HHHHHHHHHHHH','.HHHHHHHHHH.','..BBBBBBBB..','.BBBBBBBBBB.','.BBBBBBBBBB.','..BBBBBBBB..'],
