@@ -80,8 +80,8 @@ function buildVillage() {
   m.spawn = {x:22, y:14, dir:'up'};
   m.npcs = [
     {kind:'cat', x:19, y:23, lines:['안녕! 송정 AI 작품마을에 온 걸 환영해.', '위쪽 건물이 전시관이야. 문으로 들어가 봐!']},
-    {kind:'penguin', x:27, y:24, lines:['포스터관에 멋진 포스터가 많아.', '작품 앞에 서면 크게 볼 수 있어.']},
-    {kind:'fox', x:12, y:17, lines:['왼쪽은 캐릭터관, 오른쪽은 글짓기관!', '화면을 톡 누르면 그곳으로 걸어가.']}
+    {kind:'turtle', x:27, y:24, lines:['포스터관에 멋진 포스터가 많아.', '작품 앞에 서면 크게 볼 수 있어.']},
+    {kind:'squirrel', x:12, y:17, lines:['왼쪽은 캐릭터관, 오른쪽은 글짓기관!', '화면을 톡 누르면 그곳으로 걸어가.']}
   ];
   return m;
 }
@@ -113,8 +113,8 @@ function buildVillageArt() {
   m.spawn = {x:23, y:17, dir:'up'};
   m.npcs = [
     {kind:'cat', x:17, y:20, lines:['안녕! 송정 AI 작품마을에 온 걸 환영해.', '위쪽 건물이 전시관이야. 문으로 들어가 봐!']},
-    {kind:'penguin', x:30, y:26, lines:['포스터관에 멋진 포스터가 많아.', '작품 앞에 서면 크게 볼 수 있어.']},
-    {kind:'fox', x:12, y:15, lines:['왼쪽은 캐릭터관, 오른쪽은 글짓기관!', '화면을 톡 누르면 그곳으로 걸어가.']}
+    {kind:'turtle', x:30, y:26, lines:['포스터관에 멋진 포스터가 많아.', '작품 앞에 서면 크게 볼 수 있어.']},
+    {kind:'squirrel', x:12, y:15, lines:['왼쪽은 캐릭터관, 오른쪽은 글짓기관!', '화면을 톡 누르면 그곳으로 걸어가.']}
   ];
   return m;
 }
@@ -162,6 +162,6 @@ function buildRoom(room, works) {
   m.portals.push({x:ex, y:H - 1, to:'village', spawn:null});
   m.labels.push({x:(ex + .5) * TILE, y:(H - 1.55) * TILE, text:'🚪 광장으로', kind:'small'});
   m.spawn = {x:ex, y:H - 2, dir:'up'};
-  m.npcs = [{kind:['bear', 'rabbit', 'alien'][ROOMS.indexOf(room)], x:ex - 3, y:H - 3, lines:['작품 앞에 서서 보기 버튼을 눌러 봐.', '칸막이 양 끝으로 돌아가면 다음 구역이야.', room.intro]}];
+  m.npcs = [{kind:['swan', 'squirrel', 'turtle'][ROOMS.indexOf(room)], x:ex - 3, y:H - 3, lines:['작품 앞에 서서 보기 버튼을 눌러 봐.', '칸막이 양 끝으로 돌아가면 다음 구역이야.', room.intro]}];
   return m;
 }
