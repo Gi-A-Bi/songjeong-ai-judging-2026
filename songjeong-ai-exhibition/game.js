@@ -22,10 +22,19 @@ const Game = (() => {
     const at = (x, y) => (x < 0 || y < 0 || x >= m.w || y >= m.h) ? '' : m.ground[y * m.w + x];
     const kind = k => k.replace(/[#\d].*$/, '').replace(/\d$/, '');
     for (let y = 0; y < m.h; y++) for (let x = 0; x < m.w; x++) g.drawImage(parseTile(m.ground[y * m.w + x]), x * TILE, y * TILE);
-    if (m.floorImage && ART.images[m.floorImage]) {           // 생성 카펫 이미지로 바닥 덮기
+    if (m.floorImage && ART.images[m.floorImage]) {           // 생성 바닥 이미지로 바닥 덮기
       g.save(); g.fillStyle = g.createPattern(ART.images[m.floorImage], 'repeat');
-      for (let y = 0; y < m.h; y++) for (let x = 0; x < m.w; x++) if (kind(at(x, y)) === 'carpet') g.fillRect(x * TILE, y * TILE, TILE, TILE);
+      for (let y = 0; y < m.h; y++) for (let x = 0; x < m.w; x++) if (['carpet', 'tilefloor', 'wood'].includes(kind(at(x, y)))) g.fillRect(x * TILE, y * TILE, TILE, TILE);
       g.restore();
+    }
+    if (m.wallImage && ART.images[m.wallImage]) {             // 생성 벽 띠: 갓돌 한 칸 + 벽 한 칸
+      const wi = ART.images[m.wallImage], capColor = m.capColor || '#5a4a3f';
+      const pat = g.createPattern(wi, 'repeat');
+      for (let y = 0; y < m.h; y++) for (let x = 0; x < m.w; x++) {
+        const k = kind(at(x, y));
+        if (k === 'wall' && kind(at(x, y - 1)) === 'wallTop') { g.save(); g.translate(0, (y - 1) * TILE); g.fillStyle = pat; g.fillRect(x * TILE, 0, TILE, TILE * 2); g.restore(); }
+        else if (k === 'wallTop' && kind(at(x, y + 1)) !== 'wall') { g.fillStyle = capColor; g.fillRect(x * TILE, y * TILE, TILE, TILE); g.fillStyle = 'rgba(255,255,255,.12)'; g.fillRect(x * TILE, y * TILE, TILE, 3); g.fillStyle = 'rgba(0,0,0,.18)'; g.fillRect(x * TILE, y * TILE + TILE - 4, TILE, 4); }
+      }
     }
     // 길·광장·물 가장자리와 벽 아래 그림자
     for (let y = 0; y < m.h; y++) for (let x = 0; x < m.w; x++) {
@@ -49,7 +58,11 @@ const Game = (() => {
         g.fillStyle = grad; g.fillRect(px, py + TILE, TILE, 10);
       }
     }
-    for (const e of m.exhibits) PROPS.frame(g, e.x * TILE + 2, e.y * TILE - 14, e.w * TILE - 4, TILE + 10, e.color);
+    const frameImg = m.frameImage && ART.images[m.frameImage];
+    for (const e of m.exhibits) {
+      if (frameImg) g.drawImage(frameImg, e.x * TILE + 2, e.y * TILE + 28 - frameImg.height);
+      else PROPS.frame(g, e.x * TILE + 2, e.y * TILE - 14, e.w * TILE - 4, TILE + 10, e.color);
+    }
     [...m.props].sort((a, b) => (a.sortY ?? a.y) - (b.sortY ?? b.y)).forEach(p => {
       if (p.type === 'placard') PROPS.placard(g, p.x + p.offX, p.y + p.offY, p.w, p.h);
       else if (p.type === 'building') PROPS.building(g, p.x, p.y, p.w, p.h, p.color, p.wall);
@@ -80,7 +93,7 @@ const Game = (() => {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     viewW = rect.width; viewH = rect.height;
     canvas.width = Math.round(viewW * dpr); canvas.height = Math.round(viewH * dpr);
-    scale = ART.on ? Math.max(1.05, Math.min(1.25, viewW / 900)) : Math.max(1.35, Math.min(1.5, viewW / 640));
+    scale = (map && map.bg) ? Math.max(1.05, Math.min(1.25, viewW / 900)) : Math.max(1.35, Math.min(1.5, viewW / 640));
   }
 
   function makeEntity(kind, x, y, dir) { return {kind, x, y, px:x * TILE, py:y * TILE, dir:dir || 'down', moving:false, tx:x, ty:y, frame:0, anim:0}; }
@@ -88,6 +101,7 @@ const Game = (() => {
   function enter(id, spawn, dir) {
     map = getMap(id);
     layer = map.layer;
+    resize();
     const s = spawn || map.spawn;
     player = makeEntity(avatarKind, s.x, s.y, dir || s.dir || 'down');
     npcs = map.npcs.map(n => ({...makeEntity(n.kind, n.x, n.y, 'down'), lines:n.lines, say:'', sayUntil:0, wait:1 + Math.random() * 2}));
@@ -203,9 +217,9 @@ const Game = (() => {
   }
 
   function drawEntity(ent) {
-    const s = sprite(ent.kind, ent.dir, ent.frame);
+    const s = (ART.on && ART.charSprite(ent.kind, ent.dir, ent.frame)) || sprite(ent.kind, ent.dir, ent.frame);
     const idle = ent.moving ? 0 : (Math.floor(clock * 2 + (ent.x + ent.y)) % 2);
-    const x = Math.round(ent.px + 4 - camera.x), y = Math.round(ent.py - 6 - camera.y) + idle;
+    const x = Math.round(ent.px + (TILE - s.width) / 2 - camera.x), y = Math.round(ent.py + TILE - s.height - 6 - camera.y) + idle;
     ctx.fillStyle = 'rgba(0,0,0,.22)'; ctx.beginPath(); ctx.ellipse(x + 12, y + 31, 10, 4, 0, 0, Math.PI * 2); ctx.fill();
     ctx.drawImage(s, x, y);
   }
@@ -240,8 +254,9 @@ const Game = (() => {
     ctx.restore();
   }
   function drawExhibits() {
+    const fi = map.frameImage && ART.images[map.frameImage], fo = ART.FRAME_OPEN;
     for (const e of map.exhibits) {
-      const x = e.x * TILE + 6 - camera.x, y = e.y * TILE - 10 - camera.y, w = e.w * TILE - 12, h = TILE + 2;
+      const x = (fi ? e.x * TILE + 2 + fo.x : e.x * TILE + 6) - camera.x, y = (fi ? e.y * TILE + 28 - fi.height + fo.y : e.y * TILE - 10) - camera.y, w = fi ? fo.w : e.w * TILE - 12, h = fi ? fo.h : TILE + 2;
       if (x + w < -8 || x > viewW / scale + 8 || y + h < -8 || y > viewH / scale + 8) continue;
       const img = thumb(e.work);
       ctx.save(); ctx.imageSmoothingEnabled = true;

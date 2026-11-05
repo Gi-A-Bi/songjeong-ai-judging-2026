@@ -10,9 +10,14 @@ function toast(text) { const t = byId('toast'); t.textContent = text; t.classLis
 
 /* ── 캐릭터 고르기 ───────────────────────── */
 const avatarCanvases = [];
+function drawAvatar(g, kind, frame) {
+  const s = (ART.on && ART.charSprite(kind, 'down', frame)) || sprite(kind, 'down', frame);
+  const k = Math.min(48 / s.width, 64 / s.height), w = Math.round(s.width * k), h = Math.round(s.height * k);
+  g.clearRect(0, 0, 48, 64); g.drawImage(s, Math.round((48 - w) / 2), 64 - h, w, h);
+}
 function avatarCard(kind) {
   const c = document.createElement('canvas'); c.width = 48; c.height = 64; c.setAttribute('aria-hidden', 'true');
-  const g = c.getContext('2d'); g.imageSmoothingEnabled = false; g.drawImage(sprite(kind, 'down', 0), 0, 0, 48, 64);
+  const g = c.getContext('2d'); g.imageSmoothingEnabled = false; drawAvatar(g, kind, 0);
   avatarCanvases.push({c, g, kind});
   const b = button('', () => select(kind), {className:'avatar-card'});
   b.dataset.kind = kind; b.setAttribute('aria-pressed', String(kind === chosen));
@@ -24,12 +29,13 @@ function select(kind) {
   document.querySelectorAll('.avatar-card').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.kind === kind)));
 }
 byId('avatars').replaceChildren(...Object.keys(AVATARS).map(avatarCard));
+ART.load().then(() => { for (const a of avatarCanvases) drawAvatar(a.g, a.kind, 0); });
 let avatarFrame = 0;
 setInterval(() => {                       // 선택 화면에서 캐릭터가 제자리걸음
   if (!pick.open) return;
   avatarFrame = (avatarFrame + 1) % 4;
   const f = [0, 1, 0, 2][avatarFrame];
-  for (const a of avatarCanvases) { a.g.clearRect(0, 0, 48, 64); a.g.drawImage(sprite(a.kind, a.kind === chosen ? 'down' : 'down', a.kind === chosen ? f : 0), 0, 0, 48, 64); }
+  for (const a of avatarCanvases) drawAvatar(a.g, a.kind, a.kind === chosen ? f : 0);
 }, 220);
 const artReady = ART.load();
 byId('pickGo').addEventListener('click', () => {
