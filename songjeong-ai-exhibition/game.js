@@ -18,9 +18,15 @@ const Game = (() => {
 
   function buildLayer(m) {
     const [c, g] = offscreen(m.w * TILE, m.h * TILE);
+    if (m.bg && ART.images[m.bg]) { g.imageSmoothingEnabled = true; g.drawImage(ART.images[m.bg], 0, 0, m.w * TILE, m.h * TILE); return c; }
     const at = (x, y) => (x < 0 || y < 0 || x >= m.w || y >= m.h) ? '' : m.ground[y * m.w + x];
     const kind = k => k.replace(/[#\d].*$/, '').replace(/\d$/, '');
     for (let y = 0; y < m.h; y++) for (let x = 0; x < m.w; x++) g.drawImage(parseTile(m.ground[y * m.w + x]), x * TILE, y * TILE);
+    if (m.floorImage && ART.images[m.floorImage]) {           // 생성 카펫 이미지로 바닥 덮기
+      g.save(); g.fillStyle = g.createPattern(ART.images[m.floorImage], 'repeat');
+      for (let y = 0; y < m.h; y++) for (let x = 0; x < m.w; x++) if (kind(at(x, y)) === 'carpet') g.fillRect(x * TILE, y * TILE, TILE, TILE);
+      g.restore();
+    }
     // 길·광장·물 가장자리와 벽 아래 그림자
     for (let y = 0; y < m.h; y++) for (let x = 0; x < m.w; x++) {
       const k = kind(at(x, y)), px = x * TILE, py = y * TILE;
@@ -48,13 +54,14 @@ const Game = (() => {
       if (p.type === 'placard') PROPS.placard(g, p.x + p.offX, p.y + p.offY, p.w, p.h);
       else if (p.type === 'building') PROPS.building(g, p.x, p.y, p.w, p.h, p.color, p.wall);
       else if (p.n !== undefined) PROPS[p.type](g, p.x, p.y, p.n);
+      else if (ART.on && ART.drawProp(g, p.type, p.x, p.y, p.color)) {}
       else PROPS[p.type](g, p.x, p.y, p.color);
     });
     return c;
   }
 
   function getMap(id) {
-    if (!maps[id]) maps[id] = id === 'village' ? buildVillage() : buildRoom(ROOMS.find(r => r.id === id), WORKS.filter(w => w.category === id));
+    if (!maps[id]) maps[id] = id === 'village' ? (ART.on && ART.images.village ? buildVillageArt() : buildVillage()) : buildRoom(ROOMS.find(r => r.id === id), WORKS.filter(w => w.category === id));
     if (!maps[id].layer) maps[id].layer = buildLayer(maps[id]);
     return maps[id];
   }
@@ -73,7 +80,7 @@ const Game = (() => {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     viewW = rect.width; viewH = rect.height;
     canvas.width = Math.round(viewW * dpr); canvas.height = Math.round(viewH * dpr);
-    scale = Math.max(1.35, Math.min(1.5, viewW / 640));
+    scale = ART.on ? Math.max(1.05, Math.min(1.25, viewW / 900)) : Math.max(1.35, Math.min(1.5, viewW / 640));
   }
 
   function makeEntity(kind, x, y, dir) { return {kind, x, y, px:x * TILE, py:y * TILE, dir:dir || 'down', moving:false, tx:x, ty:y, frame:0, anim:0}; }
@@ -215,7 +222,7 @@ const Game = (() => {
     ctx.restore();
   }
   function labelStyle(kind) {
-    return {building:{font:'16px', fill:'#fff', bg:null, stroke:'#18332b'}, small:{font:'12px', fill:'#fff', stroke:'rgba(0,0,0,.6)'}, sign:{font:'12px', fill:'#6b4e12'}, zone:{font:'13px', fill:'#18332b'}, title:{font:'12px', fill:'#fff', stroke:'rgba(0,0,0,.7)'}}[kind];
+    return {building:{font:'16px', fill:'#fff', bg:null, stroke:'#18332b'}, small:{font:'12px', fill:'#fff', stroke:'rgba(0,0,0,.6)'}, sign:{font:'12px', fill:'#6b4e12'}, zone:{font:'13px', fill:'#18332b'}, board:{font:'15px', fill:'#6b4e12'}, title:{font:'12px', fill:'#fff', stroke:'rgba(0,0,0,.7)'}}[kind];
   }
   function drawLabels(which) {
     ctx.save(); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -256,7 +263,7 @@ const Game = (() => {
       }
     }
     if (map.id === 'village') {                                   // 분수 물방울
-      const fx = 22 * TILE, fy = 21 * TILE + 8;
+      const fx = map.fountain ? map.fountain.x : 22 * TILE, fy = map.fountain ? map.fountain.y : 21 * TILE + 8;
       for (let i = 0; i < 6; i++) { const a = (t * 2 + i) % 1, dx = Math.cos(i * 1.05) * 14 * a, dy = -18 * Math.sin(a * Math.PI) + a * 10; ctx.fillStyle = 'rgba(220,245,255,' + (1 - a) + ')'; ctx.fillRect(fx + dx - camera.x, fy + dy - camera.y, 2, 2); }
     }
     for (const e of map.exhibits) {                               // 액자 스포트라이트

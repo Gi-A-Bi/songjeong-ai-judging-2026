@@ -44,10 +44,10 @@ footer{max-width:1100px;margin:auto;padding:0 16px 32px;color:#3d5a4a;font-size:
 .hud>*{pointer-events:auto}
 .hud-top{top:0}
 .hud-bottom{bottom:0;align-items:flex-end}
-.place{background:rgba(24,51,43,.85);color:#ffe36b;font-family:var(--pixel);padding:8px 14px;border-radius:8px;font-size:1rem;border:2px solid #ffe36b;box-shadow:2px 2px 0 rgba(0,0,0,.4)}
+.place{white-space:nowrap;background:rgba(24,51,43,.85);color:#ffe36b;font-family:var(--pixel);padding:8px 14px;border-radius:8px;font-size:1rem;border:2px solid #ffe36b;box-shadow:2px 2px 0 rgba(0,0,0,.4)}
 .hud-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
 .minimap{width:150px;height:100px;border:3px solid #fff;border-radius:6px;box-shadow:2px 2px 0 rgba(0,0,0,.4);background:#10211b;image-rendering:auto}
-@media (max-width:640px){.minimap{width:100px;height:66px}}
+@media (max-width:640px){.minimap{width:100px;height:66px}.hud-label{display:none}.hud-btn{padding:8px 10px}}
 .hud-buttons{display:flex;gap:6px}
 .hud-btn{border-radius:8px;font-family:var(--pixel);background:#fff;border:2px solid #18332b;padding:8px 12px;font-size:.95rem;box-shadow:2px 2px 0 #18332b}
 .hud-btn:active{transform:translate(2px,2px);box-shadow:none}

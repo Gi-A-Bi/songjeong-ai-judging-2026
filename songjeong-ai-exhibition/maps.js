@@ -86,6 +86,39 @@ function buildVillage() {
   return m;
 }
 
+/* ── 마을 (생성 이미지 배경) ─────────────── */
+function buildVillageArt() {
+  const W = 48, H = 32, m = makeGrid('village', '중앙 광장', W, H, 'grass');
+  m.bg = 'village';
+  const block = (x0, y0, x1, y1) => { for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) m.block(x, y); };
+  block(0, 0, W - 1, 3); block(0, 0, 1, H - 1); block(46, 0, 47, H - 1); block(0, 28, W - 1, 31);
+  for (let y = 28; y <= 30; y++) for (let x = 22; x <= 25; x++) m.block(x, y, 0);   // 아래쪽 길
+  const doors = [[4, 15, 9], [18, 30, 23], [33, 45, 38]];
+  ROOMS.forEach((room, i) => {
+    const [x0, x1, dx] = doors[i];
+    block(x0, 4, x1, 12);
+    m.block(dx, 12, 0); m.block(dx + 1, 12, 0);
+    m.portals.push({x:dx, y:12, to:room.id}, {x:dx + 1, y:12, to:room.id});
+    m.labels.push({x:(x0 + x1 + 1) / 2 * TILE + (i === 0 ? 12 : i === 1 ? 10 : 8), y:7.75 * TILE, text:room.icon + ' ' + room.label, kind:'board'});
+    m.labels.push({x:(dx + 1) * TILE, y:13.5 * TILE, text:room.hint, kind:'small'});
+  });
+  block(3, 10, 3, 12); block(16, 10, 17, 11); block(30, 11, 32, 12); block(44, 10, 45, 12);   // 건물 옆 덤불
+  block(2, 19, 11, 27);                       // 연못
+  block(14, 18, 15, 19); block(32, 18, 33, 19); // 가로등
+  block(21, 19, 26, 26);                      // 분수
+  block(16, 22, 19, 24); block(29, 22, 32, 24); // 벤치
+  block(38, 19, 43, 21); block(38, 24, 43, 26); // 피크닉 테이블
+  block(14, 26, 15, 27); block(32, 26, 33, 27); block(12, 18, 13, 19); block(34, 18, 35, 19); // 덤불
+  m.fountain = {x:24 * TILE, y:21 * TILE};
+  m.spawn = {x:23, y:17, dir:'up'};
+  m.npcs = [
+    {kind:'cat', x:17, y:20, lines:['안녕! 송정 AI 작품마을에 온 걸 환영해.', '위쪽 건물이 전시관이야. 문으로 들어가 봐!']},
+    {kind:'penguin', x:30, y:26, lines:['포스터관에 멋진 포스터가 많아.', '작품 앞에 서면 크게 볼 수 있어.']},
+    {kind:'fox', x:12, y:15, lines:['왼쪽은 캐릭터관, 오른쪽은 글짓기관!', '화면을 톡 누르면 그곳으로 걸어가.']}
+  ];
+  return m;
+}
+
 /* ── 전시관 ─────────────────────────────── */
 function buildRoom(room, works) {
   const zones = groupZones(works);
@@ -95,6 +128,7 @@ function buildRoom(room, works) {
   const maxRow = Math.max(...rows.map(r => r.works.length));
   const W = Math.max(18, maxRow * 3 + 8), H = rows.length * 5 + 2;
   const m = makeGrid(room.id, room.label, W, H, room.floor + room.floorColor);
+  if (typeof ART !== 'undefined' && ART.on && room.id === 'character') m.floorImage = 'carpet';
   const wallTop = 'wallTop' + room.wallTop, wall = 'wall' + room.wall;
   // 테두리
   for (let x = 0; x < W; x++) { m.set(x, 0, wallTop, true); m.set(x, H - 1, wallTop, true); }
