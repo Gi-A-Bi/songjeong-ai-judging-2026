@@ -236,7 +236,7 @@ const Game = (() => {
     ctx.restore();
   }
   function labelStyle(kind) {
-    return {building:{font:'16px', fill:'#fff', bg:null, stroke:'#18332b'}, small:{font:'12px', fill:'#fff', stroke:'rgba(0,0,0,.6)'}, sign:{font:'12px', fill:'#6b4e12'}, zone:{font:'13px', fill:'#18332b'}, board:{font:'15px', fill:'#6b4e12'}, title:{font:'12px', fill:'#fff', stroke:'rgba(0,0,0,.7)'}}[kind];
+    return {building:{font:'16px', fill:'#fff', bg:null, stroke:'#18332b'}, small:{font:'12px', fill:'#fff'}, sign:{font:'12px', fill:'#6b4e12'}, zone:{font:'14px', fill:'#18332b'}, board:{font:'22px', fill:'#5a3a12'}, title:{font:'12px', fill:'#fff'}}[kind];
   }
   function drawLabels(which) {
     ctx.save(); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -247,6 +247,16 @@ const Game = (() => {
       const st = labelStyle(l.kind), sx = (l.x - camera.x) * scale, sy = (l.y - camera.y) * scale;
       ctx.font = st.font + ' ' + FONT;
       if (l.kind === 'building') { const tw = ctx.measureText(l.text).width + 18; ctx.fillStyle = l.color; roundRect(sx - tw / 2, sy - 12, tw, 24, 12); ctx.fill(); }
+      if (l.kind === 'small' || l.kind === 'title') {           // 둥근 배지
+        const tw = ctx.measureText(l.text).width + 14, th = l.kind === 'title' ? 20 : 18;
+        ctx.fillStyle = 'rgba(24,51,43,.78)'; roundRect(sx - tw / 2, sy - th / 2, tw, th, th / 2); ctx.fill();
+        ctx.fillStyle = '#fff'; ctx.fillText(l.text, sx, sy + 1); continue;
+      }
+      if (l.kind === 'board') {                                  // 간판: 큰 글자 + 밝은 외곽선 + 그림자
+        ctx.lineWidth = 5; ctx.strokeStyle = '#fff3d6'; ctx.lineJoin = 'round'; ctx.strokeText(l.text, sx, sy);
+        ctx.fillStyle = 'rgba(0,0,0,.18)'; ctx.fillText(l.text, sx + 1.5, sy + 2);
+        ctx.fillStyle = st.fill; ctx.fillText(l.text, sx, sy); continue;
+      }
       if (st.stroke) { ctx.lineWidth = 3; ctx.strokeStyle = st.stroke; ctx.strokeText(l.text, sx, sy); }
       ctx.fillStyle = l.kind === 'zone' ? l.color : st.fill;
       ctx.fillText(l.text, sx, sy);
