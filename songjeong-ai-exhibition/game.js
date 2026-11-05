@@ -236,7 +236,7 @@ const Game = (() => {
     ctx.restore();
   }
   function labelStyle(kind) {
-    return {building:{font:'16px', fill:'#fff', bg:null, stroke:'#18332b'}, small:{font:'12px', fill:'#fff'}, sign:{font:'12px', fill:'#6b4e12'}, zone:{font:'14px', fill:'#18332b'}, board:{font:'22px', fill:'#5a3a12'}, title:{font:'12px', fill:'#fff'}}[kind];
+    return {building:{font:'16px', fill:'#fff', bg:null, stroke:'#18332b'}, small:{font:'12px', fill:'#fff'}, sign:{font:'12px', fill:'#6b4e12'}, zone:{font:'14px', fill:'#18332b'}, board:{font:'28px', fill:'#7a4a14'}, title:{font:'12px', fill:'#fff'}}[kind];
   }
   function drawLabels(which) {
     ctx.save(); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -252,9 +252,11 @@ const Game = (() => {
         ctx.fillStyle = 'rgba(24,51,43,.78)'; roundRect(sx - tw / 2, sy - th / 2, tw, th, th / 2); ctx.fill();
         ctx.fillStyle = '#fff'; ctx.fillText(l.text, sx, sy + 1); continue;
       }
-      if (l.kind === 'board') {                                  // 간판: 큰 글자 + 밝은 외곽선 + 그림자
-        ctx.lineWidth = 5; ctx.strokeStyle = '#fff3d6'; ctx.lineJoin = 'round'; ctx.strokeText(l.text, sx, sy);
-        ctx.fillStyle = 'rgba(0,0,0,.18)'; ctx.fillText(l.text, sx + 1.5, sy + 2);
+      if (l.kind === 'board') {                                  // 간판: 새긴 듯한 큰 글자
+        ctx.lineJoin = 'round';
+        ctx.lineWidth = 6; ctx.strokeStyle = '#fff8e8'; ctx.strokeText(l.text, sx, sy);       // 밝은 테두리
+        ctx.fillStyle = 'rgba(80,45,10,.35)'; ctx.fillText(l.text, sx + 2, sy + 3);          // 그림자
+        ctx.lineWidth = 2; ctx.strokeStyle = '#3a2208'; ctx.strokeText(l.text, sx, sy);       // 진한 외곽선
         ctx.fillStyle = st.fill; ctx.fillText(l.text, sx, sy); continue;
       }
       if (st.stroke) { ctx.lineWidth = 3; ctx.strokeStyle = st.stroke; ctx.strokeText(l.text, sx, sy); }
