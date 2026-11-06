@@ -287,7 +287,7 @@ const Game = (() => {
       if (img) { const r = Math.min(w / img.naturalWidth, h / img.naturalHeight), dw = img.naturalWidth * r, dh = img.naturalHeight * r; ctx.fillStyle = '#f6f6f3'; ctx.fillRect(x, y, w, h); ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh); }
       else { ctx.fillStyle = '#fff8e8'; ctx.fillRect(x, y, w, h); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.font = '12px ' + FONT; ctx.fillStyle = e.color; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; const sx = (x + w / 2) * scale, sy = (y + h / 2) * scale; const t = e.work.title; ctx.fillText(t.length > 7 ? t.slice(0, 7) + '…' : t, sx, sy); }
       ctx.restore();
-      if (e.award) { ctx.strokeStyle = e.award.rank <= 3 ? '#ffc400' : '#ffe08a'; ctx.lineWidth = 2; ctx.strokeRect(x - 7, y - 7, w + 14, h + 14); }
+      if (e.award) { ctx.strokeStyle = (e.award.grade === '대상' || e.award.grade === '최우수상') ? '#ffc400' : '#ffe08a'; ctx.lineWidth = 2; ctx.strokeRect(x - 7, y - 7, w + 14, h + 14); }
       if (e === nearExhibit) { ctx.strokeStyle = '#ffe36b'; ctx.lineWidth = 3; ctx.strokeRect(x - 5, y - 5, w + 10, h + 10); }
     }
   }
