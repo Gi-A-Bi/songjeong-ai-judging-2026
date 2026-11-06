@@ -247,11 +247,14 @@ const Game = (() => {
       const st = labelStyle(l.kind), sx = (l.x - camera.x) * scale, sy = (l.y - camera.y) * scale;
       ctx.font = st.font + ' ' + FONT;
       if (l.kind === 'building') { const tw = ctx.measureText(l.text).width + 18; ctx.fillStyle = l.color; roundRect(sx - tw / 2, sy - 12, tw, 24, 12); ctx.fill(); }
-      if (l.kind === 'award') {                                  // 수상 메달 배지
-        const tw = ctx.measureText(l.text).width + 14, th = 20;
-        ctx.fillStyle = l.top ? '#ffd54a' : '#fff0b3'; roundRect(sx - tw / 2, sy - th / 2, tw, th, 10); ctx.fill();
+      if (l.kind === 'award') {                                  // 수상 배지: 등급 + 학년·반·이름
+        const w1 = ctx.measureText(l.text).width; ctx.font = '11px ' + FONT; const w2 = l.sub ? ctx.measureText(l.sub).width : 0;
+        const tw = Math.max(w1, w2) + 14, th = l.sub ? 34 : 20;
+        ctx.fillStyle = l.top ? '#ffd54a' : '#fff0b3'; roundRect(sx - tw / 2, sy - th / 2, tw, th, 8); ctx.fill();
         ctx.lineWidth = 2; ctx.strokeStyle = '#8a5a00'; ctx.stroke();
-        ctx.fillStyle = st.fill; ctx.fillText(l.text, sx, sy + 1); continue;
+        ctx.fillStyle = st.fill; ctx.font = st.font + ' ' + FONT; ctx.fillText(l.text, sx, sy - (l.sub ? 7 : -1));
+        if (l.sub) { ctx.font = '11px ' + FONT; ctx.fillStyle = '#3d2a00'; ctx.fillText(l.sub, sx, sy + 8); }
+        continue;
       }
       if (l.kind === 'small' || l.kind === 'title') {           // 둥근 배지
         const tw = ctx.measureText(l.text).width + 14, th = l.kind === 'title' ? 20 : 18;

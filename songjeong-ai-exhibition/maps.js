@@ -155,7 +155,7 @@ function buildRoom(room, works) {
       const x = 7 + i * 3, award = awardOf(work);
       m.exhibits.push({x, y:face, w:2, work, zone:row.zone, color:room.color, award, interact:{x:x, y:face + 1}, interact2:{x:x + 1, y:face + 1}});
       m.labels.push({x:(x + 1) * TILE, y:(face + 1.08) * TILE, text:work.title.length > 9 ? work.title.slice(0, 9) + '…' : work.title, kind:'title'});
-      if (award) m.labels.push({x:(x + 1) * TILE, y:(face - 0.62) * TILE, text:awardIcon(award) + ' ' + awardLabel(award), kind:'award', top:award.grade === '대상' || award.grade === '최우수상'});
+      if (award) m.labels.push({x:(x + 1) * TILE, y:(face - 0.72) * TILE, text:awardIcon(award) + ' ' + awardLabel(award), sub:award.student || '', kind:'award', top:award.grade === '대상' || award.grade === '최우수상'});
     });
     if (row.award) for (let x = 6; x < W - 6; x++) m.set(x, top + 3, 'rug#c9a227');   // 수상작 줄은 금색 러그
     // 복도 소품: 러그, 화분, 벤치, 조명
