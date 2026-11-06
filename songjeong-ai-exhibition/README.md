@@ -2,6 +2,14 @@
 
 서울송정초 2026 AI 공모전의 감상용 메타버스형 2D 웹 전시관입니다. 캐릭터를 골라 픽셀 마을을 걸어 다니며 전시관에 들어가고, 벽에 걸린 작품 앞에 서면 크게 볼 수 있습니다. 심사 시스템과 분리된 독립 정적 페이지로, 설치나 빌드 없이 동작합니다.
 
+## 접속 주소
+
+- 전시: https://gi-a-bi.github.io/songjeong-ai-judging-2026/songjeong-ai-exhibition/
+- 접속 안내(QR 포함, 인쇄용): https://gi-a-bi.github.io/songjeong-ai-judging-2026/songjeong-ai-exhibition/접속안내.html
+- QR 이미지: images/qr.png
+
+GitHub Pages(정적 호스팅)라 동시 접속 제한이 사실상 없고, 디벗·휴대폰·PC 브라우저에서 바로 열립니다. main 브랜치에 올리면 1~2분 뒤 자동 반영됩니다.
+
 ## 실행
 
 이 폴더의 index.html을 브라우저에서 엽니다. 정적 호스팅(GitHub Pages 등)에 폴더째 올려도 됩니다.
