@@ -236,17 +236,23 @@ const Game = (() => {
     ctx.restore();
   }
   function labelStyle(kind) {
-    return {building:{font:'16px', fill:'#fff', bg:null, stroke:'#18332b'}, small:{font:'12px', fill:'#fff'}, sign:{font:'12px', fill:'#6b4e12'}, zone:{font:'14px', fill:'#18332b'}, board:{font:'28px', fill:'#7a4a14'}, title:{font:'12px', fill:'#fff'}}[kind];
+    return {building:{font:'16px', fill:'#fff', bg:null, stroke:'#18332b'}, small:{font:'12px', fill:'#fff'}, sign:{font:'12px', fill:'#6b4e12'}, zone:{font:'14px', fill:'#18332b'}, award:{font:'12px', fill:'#5a3a00'}, board:{font:'28px', fill:'#7a4a14'}, title:{font:'12px', fill:'#fff'}}[kind];
   }
   function drawLabels(which) {
     ctx.save(); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     const vx0 = camera.x - 64, vy0 = camera.y - 64, vx1 = camera.x + viewW / scale + 64, vy1 = camera.y + viewH / scale + 64;
     for (const l of map.labels) {
-      if ((l.kind === 'title') !== (which === 'title')) continue;
+      if ((l.kind === 'title' || l.kind === 'award') !== (which === 'title')) continue;
       if (l.x < vx0 || l.x > vx1 || l.y < vy0 || l.y > vy1) continue;
       const st = labelStyle(l.kind), sx = (l.x - camera.x) * scale, sy = (l.y - camera.y) * scale;
       ctx.font = st.font + ' ' + FONT;
       if (l.kind === 'building') { const tw = ctx.measureText(l.text).width + 18; ctx.fillStyle = l.color; roundRect(sx - tw / 2, sy - 12, tw, 24, 12); ctx.fill(); }
+      if (l.kind === 'award') {                                  // 수상 메달 배지
+        const tw = ctx.measureText(l.text).width + 14, th = 20;
+        ctx.fillStyle = l.top ? '#ffd54a' : '#fff0b3'; roundRect(sx - tw / 2, sy - th / 2, tw, th, 10); ctx.fill();
+        ctx.lineWidth = 2; ctx.strokeStyle = '#8a5a00'; ctx.stroke();
+        ctx.fillStyle = st.fill; ctx.fillText(l.text, sx, sy + 1); continue;
+      }
       if (l.kind === 'small' || l.kind === 'title') {           // 둥근 배지
         const tw = ctx.measureText(l.text).width + 14, th = l.kind === 'title' ? 20 : 18;
         ctx.fillStyle = 'rgba(24,51,43,.78)'; roundRect(sx - tw / 2, sy - th / 2, tw, th, th / 2); ctx.fill();
@@ -281,6 +287,7 @@ const Game = (() => {
       if (img) { const r = Math.min(w / img.naturalWidth, h / img.naturalHeight), dw = img.naturalWidth * r, dh = img.naturalHeight * r; ctx.fillStyle = '#f6f6f3'; ctx.fillRect(x, y, w, h); ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh); }
       else { ctx.fillStyle = '#fff8e8'; ctx.fillRect(x, y, w, h); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.font = '12px ' + FONT; ctx.fillStyle = e.color; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; const sx = (x + w / 2) * scale, sy = (y + h / 2) * scale; const t = e.work.title; ctx.fillText(t.length > 7 ? t.slice(0, 7) + '…' : t, sx, sy); }
       ctx.restore();
+      if (e.award) { ctx.strokeStyle = e.award.rank <= 3 ? '#ffc400' : '#ffe08a'; ctx.lineWidth = 2; ctx.strokeRect(x - 7, y - 7, w + 14, h + 14); }
       if (e === nearExhibit) { ctx.strokeStyle = '#ffe36b'; ctx.lineWidth = 3; ctx.strokeRect(x - 5, y - 5, w + 10, h + 10); }
     }
   }

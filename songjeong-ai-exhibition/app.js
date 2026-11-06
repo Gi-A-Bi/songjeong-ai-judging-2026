@@ -55,7 +55,7 @@ Game.on('enter', map => {
   document.querySelectorAll('#nav button').forEach(n => n.toggleAttribute('aria-current', (n.dataset.room || '') === (currentRoom ? currentRoom.id : '')));
   const hash = currentRoom ? '#' + currentRoom.id : '';
   if (location.hash !== hash) history.replaceState(null, '', location.pathname + location.search + hash);
-  toast(currentRoom ? currentRoom.intro : '방향키나 화면 터치로 걸어 전시관 문으로 들어가요.');
+  toast(currentRoom ? currentRoom.intro + ' 🏆 수상작은 입구 앞 금색 줄에 있어요.' : '방향키나 화면 터치로 걸어 전시관 문으로 들어가요.');
 });
 Game.on('near', e => {
   const p = byId('prompt');
@@ -103,7 +103,7 @@ function renderList() {
   const all = map.exhibits;
   const shown = query ? all.filter(e => (e.work.title + ' ' + e.zone + ' ' + (e.work.note || '')).toLowerCase().includes(query)) : all;
   const zones = new Map();
-  for (const e of shown) { if (!zones.has(e.zone)) zones.set(e.zone, []); zones.get(e.zone).push(e); }
+  for (const e of shown.filter(e => e.zone === AWARD_ZONE).concat(shown.filter(e => e.zone !== AWARD_ZONE))) { if (!zones.has(e.zone)) zones.set(e.zone, []); zones.get(e.zone).push(e); }
   const zoneId = name => 'zone-' + encodeURIComponent(name).replace(/%/g, '');
   byId('sections').replaceChildren(...([...zones].map(([name, list]) => el('section', {className:'zone'},
     el('h3', {className:'zone-title', id:zoneId(name), tabIndex:-1}, name, ' ', el('small', {}, list.length + '편')),
@@ -115,8 +115,9 @@ function card(room, e) {
   const work = e.work, image = work.pages.find(p => p.image);
   const thumb = el('span', {className:'thumb'});
   if (image || work.thumb) thumb.append(el('img', {src:work.thumb || image.image, alt:'', loading:'lazy'})); else { thumb.textContent = room.icon; thumb.setAttribute('aria-hidden', 'true'); }
-  const note = work.note || (work.pages.length > 1 ? work.pages.length + '쪽' : '');
-  const b = button('', () => { listDialog.close(); Game.goToExhibit(e, true); }, {className:'card'});
+  const award = awardOf(work);
+  const note = (award ? (award.rank <= 3 ? ['🥇', '🥈', '🥉'][award.rank - 1] : '🏅') + ' ' + awardLabel(award) + (work.note ? ' · ' : '') : '') + (work.note || (!award && work.pages.length > 1 ? work.pages.length + '쪽' : ''));
+  const b = button('', () => { listDialog.close(); Game.goToExhibit(e, true); }, {className:'card' + (award ? ' award' : '')});
   b.append(thumb, el('span', {className:'card-body'}, el('span', {className:'card-title'}, work.title), note ? el('span', {className:'card-note'}, note) : ''));
   b.setAttribute('aria-label', work.title + ', 작품 앞으로 가서 보기');
   return b;
@@ -157,7 +158,8 @@ function setZoom(level) {
 }
 function renderWork() {
   const work = works[workIndex], page = work.pages[pageIndex], total = work.pages.length;
-  byId('chip').textContent = currentRoom.label + (work.zone ? ' · ' + work.zone : '');
+  const aw = awardOf(work);
+  byId('chip').textContent = currentRoom.label + (aw ? ' · 🏆 ' + awardLabel(aw) : work.zone ? ' · ' + work.zone : '');
   byId('title').textContent = work.title;
   setZoom(1);
   if (page.image) {
