@@ -120,10 +120,15 @@ function buildVillageArt() {
 }
 
 /* ── 전시관 ─────────────────────────────── */
+const AWARD_ZONE = '🏆 수상작';
+function awardOf(work) { return (typeof AWARDS !== 'undefined' && AWARDS[work.id]) || null; }
+function awardLabel(a) { return (a.tie ? '공동 ' : '') + a.rank + '위'; }
 function buildRoom(room, works) {
-  const zones = groupZones(works);
+  const winners = works.filter(awardOf).sort((a, b) => awardOf(a).rank - awardOf(b).rank || works.indexOf(a) - works.indexOf(b));
+  const zones = groupZones(works.filter(w => !awardOf(w)));
   const rows = [];
   for (const [zone, list] of zones) for (let i = 0; i < list.length; i += PER_ROW) rows.push({zone, works:list.slice(i, i + PER_ROW), first:i === 0});
+  for (let i = 0; i < winners.length; i += PER_ROW) rows.push({zone:AWARD_ZONE, works:winners.slice(i, i + PER_ROW), first:i === 0, award:true});   // 입구(아래)에서 가장 가까운 줄
   if (!rows.length) rows.push({zone:'준비 중', works:[], first:true});
   const maxRow = Math.max(...rows.map(r => r.works.length));
   const W = Math.max(18, maxRow * 3 + 8), H = rows.length * 5 + 2;
@@ -143,10 +148,12 @@ function buildRoom(room, works) {
     m.labels.push({x:4.5 * TILE, y:(face + .45) * TILE, text:zoneName.length > 10 ? zoneName.slice(0, 10) + '…' : zoneName, kind:'zone', color:room.color});
     // 작품 액자
     row.works.forEach((work, i) => {
-      const x = 7 + i * 3;
-      m.exhibits.push({x, y:face, w:2, work, zone:row.zone, color:room.color, interact:{x:x, y:face + 1}, interact2:{x:x + 1, y:face + 1}});
+      const x = 7 + i * 3, award = awardOf(work);
+      m.exhibits.push({x, y:face, w:2, work, zone:row.zone, color:room.color, award, interact:{x:x, y:face + 1}, interact2:{x:x + 1, y:face + 1}});
       m.labels.push({x:(x + 1) * TILE, y:(face + 1.08) * TILE, text:work.title.length > 9 ? work.title.slice(0, 9) + '…' : work.title, kind:'title'});
+      if (award) m.labels.push({x:(x + 1) * TILE, y:(face - 0.62) * TILE, text:(award.rank <= 3 ? ['🥇', '🥈', '🥉'][award.rank - 1] : '🏅') + ' ' + awardLabel(award), kind:'award', top:award.rank <= 3});
     });
+    if (row.award) for (let x = 6; x < W - 6; x++) m.set(x, top + 3, 'rug#c9a227');   // 수상작 줄은 금색 러그
     // 복도 소품: 러그, 화분, 벤치, 조명
     const cy = top + 3;
     for (let x = 7; x < W - 7; x++) m.set(x, cy, 'rug' + room.rug);
