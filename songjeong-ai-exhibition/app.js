@@ -116,7 +116,7 @@ function card(room, e) {
   const thumb = el('span', {className:'thumb'});
   if (image || work.thumb) thumb.append(el('img', {src:work.thumb || image.image, alt:'', loading:'lazy'})); else { thumb.textContent = room.icon; thumb.setAttribute('aria-hidden', 'true'); }
   const award = awardOf(work);
-  const note = (award ? (award.rank <= 3 ? ['🥇', '🥈', '🥉'][award.rank - 1] : '🏅') + ' ' + awardLabel(award) + (work.note ? ' · ' : '') : '') + (work.note || (!award && work.pages.length > 1 ? work.pages.length + '쪽' : ''));
+  const note = (award ? awardIcon(award) + ' ' + awardLabel(award) + (work.note ? ' · ' : '') : '') + (work.note || (!award && work.pages.length > 1 ? work.pages.length + '쪽' : ''));
   const b = button('', () => { listDialog.close(); Game.goToExhibit(e, true); }, {className:'card' + (award ? ' award' : '')});
   b.append(thumb, el('span', {className:'card-body'}, el('span', {className:'card-title'}, work.title), note ? el('span', {className:'card-note'}, note) : ''));
   b.setAttribute('aria-label', work.title + ', 작품 앞으로 가서 보기');
@@ -159,7 +159,7 @@ function setZoom(level) {
 function renderWork() {
   const work = works[workIndex], page = work.pages[pageIndex], total = work.pages.length;
   const aw = awardOf(work);
-  byId('chip').textContent = currentRoom.label + (aw ? ' · 🏆 ' + awardLabel(aw) : work.zone ? ' · ' + work.zone : '');
+  byId('chip').textContent = currentRoom.label + (aw ? ' · ' + awardIcon(aw) + ' ' + awardLabel(aw) : work.zone ? ' · ' + work.zone : '');
   byId('title').textContent = work.title;
   setZoom(1);
   if (page.image) {
